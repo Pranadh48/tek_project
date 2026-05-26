@@ -308,16 +308,14 @@ export default function App() {
   // Quality check configuration
   const qualityCheckData = [
     { name: 'ID', count: 0, percentage: '0.0% empty', status: 'clean' },
-    { name: 'GENDER', count: 0, percentage: '0.0% empty', status: 'clean' },
-    { name: 'EVER_MARRIED', count: 140, percentage: '1.7% empty', status: 'warning' },
     { name: 'AGE', count: 0, percentage: '0.0% empty', status: 'clean' },
-    { name: 'GRADUATED', count: 78, percentage: '1.0% empty', status: 'warning' },
-    { name: 'PROFESSION', count: 124, percentage: '1.5% empty', status: 'warning' },
-    { name: 'WORK_EXPERIENCE', count: 829, percentage: '10.3% empty', status: 'warning' },
+    { name: 'GENDER', count: 0, percentage: '0.0% empty', status: 'clean' },
+    { name: 'INCOME', count: 0, percentage: '0.0% empty', status: 'clean' },
     { name: 'SPENDING_SCORE', count: 0, percentage: '0.0% empty', status: 'clean' },
-    { name: 'FAMILY_SIZE', count: 335, percentage: '4.2% empty', status: 'warning' },
-    { name: 'VAR_1', count: 76, percentage: '0.9% empty', status: 'warning' },
-    { name: 'SEGMENTATION', count: 0, percentage: '0.0% empty', status: 'clean' }
+    { name: 'MEMBERSHIP_YEARS', count: 0, percentage: '0.0% empty', status: 'clean' },
+    { name: 'PURCHASE_FREQUENCY', count: 0, percentage: '0.0% empty', status: 'clean' },
+    { name: 'PREFERRED_CATEGORY', count: 0, percentage: '0.0% empty', status: 'clean' },
+    { name: 'LAST_PURCHASE_AMOUNT', count: 0, percentage: '0.0% empty', status: 'clean' }
   ];
 
   return (

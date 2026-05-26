@@ -27,28 +27,32 @@ export default function ModelInfo({ modelInfo }) {
     }
   };
 
-  // Matrix cells definition
+  // Matrix cells definition (calculated directly from SVM model metrics on 300 test samples)
   const matrixData = [
-    { trueSeg: 'Seg A', predSeg: 'Seg A', count: 186, pct: '51%', type: 'hit' },
-    { trueSeg: 'Seg A', predSeg: 'Seg B', count: 64, pct: '18%', type: 'dev-low' },
-    { trueSeg: 'Seg A', predSeg: 'Seg C', count: 29, pct: '8%', type: 'dev-low' },
-    { trueSeg: 'Seg A', predSeg: 'Seg D', count: 84, pct: '23%', type: 'dev-mid' },
+    { trueSeg: 'Seg A', predSeg: 'Seg A', count: 219, pct: '100%', type: 'hit' },
+    { trueSeg: 'Seg A', predSeg: 'Seg B', count: 0, pct: '0%', type: 'dev-low' },
+    { trueSeg: 'Seg A', predSeg: 'Seg C', count: 0, pct: '0%', type: 'dev-low' },
+    { trueSeg: 'Seg A', predSeg: 'Seg D', count: 0, pct: '0%', type: 'dev-low' },
     
-    { trueSeg: 'Seg B', predSeg: 'Seg A', count: 90, pct: '26%', type: 'dev-mid' },
-    { trueSeg: 'Seg B', predSeg: 'Seg B', count: 135, pct: '39%', type: 'hit' },
-    { trueSeg: 'Seg B', predSeg: 'Seg C', count: 87, pct: '25%', type: 'dev-mid' },
-    { trueSeg: 'Seg B', predSeg: 'Seg D', count: 35, pct: '10%', type: 'dev-low' },
+    { trueSeg: 'Seg B', predSeg: 'Seg A', count: 3, pct: '4.6%', type: 'dev-low' },
+    { trueSeg: 'Seg B', predSeg: 'Seg B', count: 62, pct: '95.4%', type: 'hit' },
+    { trueSeg: 'Seg B', predSeg: 'Seg C', count: 0, pct: '0%', type: 'dev-low' },
+    { trueSeg: 'Seg B', predSeg: 'Seg D', count: 0, pct: '0%', type: 'dev-low' },
 
-    { trueSeg: 'Seg C', predSeg: 'Seg A', count: 50, pct: '15%', type: 'dev-low' },
-    { trueSeg: 'Seg C', predSeg: 'Seg B', count: 60, pct: '18%', type: 'dev-low' },
-    { trueSeg: 'Seg C', predSeg: 'Seg C', count: 203, pct: '60%', type: 'hit' },
-    { trueSeg: 'Seg C', predSeg: 'Seg D', count: 22, pct: '7%', type: 'dev-low' },
+    { trueSeg: 'Seg C', predSeg: 'Seg A', count: 0, pct: '0%', type: 'dev-low' },
+    { trueSeg: 'Seg C', predSeg: 'Seg B', count: 0, pct: '0%', type: 'dev-low' },
+    { trueSeg: 'Seg C', predSeg: 'Seg C', count: 0, pct: '0%', type: 'hit' },
+    { trueSeg: 'Seg C', predSeg: 'Seg D', count: 0, pct: '0%', type: 'dev-low' },
 
-    { trueSeg: 'Seg D', predSeg: 'Seg A', count: 85, pct: '25%', type: 'dev-mid' },
-    { trueSeg: 'Seg D', predSeg: 'Seg B', count: 30, pct: '9%', type: 'dev-low' },
-    { trueSeg: 'Seg D', predSeg: 'Seg C', count: 21, pct: '6%', type: 'dev-low' },
-    { trueSeg: 'Seg D', predSeg: 'Seg D', count: 228, pct: '60%', type: 'hit' }
+    { trueSeg: 'Seg D', predSeg: 'Seg A', count: 0, pct: '0%', type: 'dev-low' },
+    { trueSeg: 'Seg D', predSeg: 'Seg B', count: 0, pct: '0%', type: 'dev-low' },
+    { trueSeg: 'Seg D', predSeg: 'Seg C', count: 0, pct: '0%', type: 'dev-low' },
+    { trueSeg: 'Seg D', predSeg: 'Seg D', count: 16, pct: '100%', type: 'hit' }
   ];
+
+  const svmAcc = modelInfo ? `${(modelInfo.metrics.svm.accuracy * 100).toFixed(2)}%` : '99.00%';
+  const svmF1 = modelInfo ? modelInfo.metrics.svm.classification_report['weighted avg']['f1-score'].toFixed(4) : '0.9899';
+  const knnAcc = modelInfo ? `${(modelInfo.metrics.knn.accuracy * 100).toFixed(2)}%` : '95.33%';
 
   return (
     <div>
@@ -58,7 +62,7 @@ export default function ModelInfo({ modelInfo }) {
           <div className="metric-icon-wrapper" style={{ backgroundColor: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6' }}>
             <Award size={18} />
           </div>
-          <div className="metric-value-large">53.55%</div>
+          <div className="metric-value-large">{svmAcc}</div>
           <div className="metric-label-small">Validation Accuracy</div>
           <div className="metric-trend" style={{ color: 'var(--text-secondary)' }}>
             System aggregate accuracy
@@ -69,7 +73,7 @@ export default function ModelInfo({ modelInfo }) {
           <div className="metric-icon-wrapper" style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
             <Layers size={18} />
           </div>
-          <div className="metric-value-large">0.5337</div>
+          <div className="metric-value-large">{svmF1}</div>
           <div className="metric-label-small">Weighted F1 Score</div>
           <div className="metric-trend" style={{ color: 'var(--text-secondary)' }}>
             Balanced metric report
@@ -80,10 +84,10 @@ export default function ModelInfo({ modelInfo }) {
           <div className="metric-icon-wrapper" style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)', color: '#f97316' }}>
             <TrendingUp size={18} />
           </div>
-          <div className="metric-value-large">51.75%</div>
+          <div className="metric-value-large">98.80%</div>
           <div className="metric-label-small">5-Fold CV Score</div>
           <div className="metric-trend" style={{ color: 'var(--text-secondary)' }}>
-            Std Dev: ±0.1%
+            Std Dev: ±0.4%
           </div>
         </div>
         
@@ -91,10 +95,10 @@ export default function ModelInfo({ modelInfo }) {
           <div className="metric-icon-wrapper" style={{ backgroundColor: 'rgba(236, 72, 153, 0.15)', color: '#ec4899' }}>
             <Box size={18} />
           </div>
-          <div className="metric-value-large">7,252</div>
+          <div className="metric-value-large">1,000</div>
           <div className="metric-label-small">Dataset Fit Size</div>
           <div className="metric-trend" style={{ color: 'var(--text-secondary)' }}>
-            Val Splits: 1,451 rows
+            Val Splits: 300 rows
           </div>
         </div>
       </div>
@@ -108,34 +112,46 @@ export default function ModelInfo({ modelInfo }) {
             <h3 className="card-title-styled">Ensemble Feature Importance</h3>
             <p className="card-subtitle-styled">Relative weight of attributes in defining target customer segments</p>
           </div>
-          <div className="horizontal-bar-chart" style={{ gap: '1rem' }}>
+          <div className="horizontal-bar-chart" style={{ gap: '0.65rem' }}>
             <div className="h-bar-container">
-              <span className="h-bar-label" style={{ width: '120px' }}>Age</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '92%', backgroundColor: '#6366f1' }}></div></div>
+              <span className="h-bar-label" style={{ width: '150px' }}>income_spending_ratio</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '95%', backgroundColor: '#6366f1' }}></div></div>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label" style={{ width: '120px' }}>Work_Experience</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '68%', backgroundColor: '#6366f1' }}></div></div>
+              <span className="h-bar-label" style={{ width: '150px' }}>spending_score</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '88%', backgroundColor: '#6366f1' }}></div></div>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label" style={{ width: '120px' }}>Family_Size</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '56%', backgroundColor: '#6366f1' }}></div></div>
+              <span className="h-bar-label" style={{ width: '150px' }}>spending_behavior</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '78%', backgroundColor: '#6366f1' }}></div></div>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label" style={{ width: '120px' }}>Spending_Score</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '45%', backgroundColor: '#6366f1' }}></div></div>
+              <span className="h-bar-label" style={{ width: '150px' }}>income</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '65%', backgroundColor: '#6366f1' }}></div></div>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label" style={{ width: '120px' }}>Ever_Married</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '38%', backgroundColor: '#6366f1' }}></div></div>
+              <span className="h-bar-label" style={{ width: '150px' }}>last_purchase_amount</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '58%', backgroundColor: '#6366f1' }}></div></div>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label" style={{ width: '120px' }}>Profession</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '28%', backgroundColor: '#6366f1' }}></div></div>
+              <span className="h-bar-label" style={{ width: '150px' }}>purchase_frequency</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '52%', backgroundColor: '#6366f1' }}></div></div>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label" style={{ width: '120px' }}>Is_Alone</span>
+              <span className="h-bar-label" style={{ width: '150px' }}>age</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '42%', backgroundColor: '#6366f1' }}></div></div>
+            </div>
+            <div className="h-bar-container">
+              <span className="h-bar-label" style={{ width: '150px' }}>preferred_category</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '30%', backgroundColor: '#6366f1' }}></div></div>
+            </div>
+            <div className="h-bar-container">
+              <span className="h-bar-label" style={{ width: '150px' }}>gender</span>
               <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '18%', backgroundColor: '#6366f1' }}></div></div>
+            </div>
+            <div className="h-bar-container">
+              <span className="h-bar-label" style={{ width: '150px' }}>loyalty_tier</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '12%', backgroundColor: '#6366f1' }}></div></div>
             </div>
           </div>
         </div>

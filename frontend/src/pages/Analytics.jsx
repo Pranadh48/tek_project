@@ -10,7 +10,7 @@ export default function Analytics({ qualityCheckData }) {
           <div className="metric-icon-wrapper" style={{ backgroundColor: 'rgba(139, 92, 246, 0.12)', color: '#8b5cf6', width: '32px', height: '32px' }}>
             <TrendingUp size={16} />
           </div>
-          <div className="metric-value-large" style={{ fontSize: '1.85rem' }}>43.5°</div>
+          <div className="metric-value-large" style={{ fontSize: '1.85rem' }}>43.8°</div>
           <div className="metric-label-small" style={{ fontSize: '0.75rem' }}>Mean Age</div>
         </div>
         
@@ -18,7 +18,7 @@ export default function Analytics({ qualityCheckData }) {
           <div className="metric-icon-wrapper" style={{ backgroundColor: 'rgba(16, 185, 129, 0.12)', color: '#10b981', width: '32px', height: '32px' }}>
             <Layers size={16} />
           </div>
-          <div className="metric-value-large" style={{ fontSize: '1.85rem' }}>40</div>
+          <div className="metric-value-large" style={{ fontSize: '1.85rem' }}>45</div>
           <div className="metric-label-small" style={{ fontSize: '0.75rem' }}>Median Age</div>
         </div>
         
@@ -34,65 +34,45 @@ export default function Analytics({ qualityCheckData }) {
           <div className="metric-icon-wrapper" style={{ backgroundColor: 'rgba(236, 72, 153, 0.12)', color: '#ec4899', width: '32px', height: '32px' }}>
             <User size={16} />
           </div>
-          <div className="metric-value-large" style={{ fontSize: '1.85rem' }}>89</div>
+          <div className="metric-value-large" style={{ fontSize: '1.85rem' }}>69</div>
           <div className="metric-label-small" style={{ fontSize: '0.75rem' }}>Maximum Age</div>
         </div>
       </div>
 
-      {/* Grid Row 1: Profession Breakdown & Gender Breakdown */}
+      {/* Grid Row 1: Category Breakdown & Gender Breakdown */}
       <div className="grid-2-col" style={{ marginBottom: '1.5rem' }}>
         
-        {/* Profession Breakdown Horizontal bar chart */}
+        {/* Preferred Category Breakdown Horizontal bar chart */}
         <div className="card-styled">
           <div className="card-header-group">
-            <h3 className="card-title-styled">Profession Breakdown</h3>
-            <p className="card-subtitle-styled">Major job sectors across the mall customer database</p>
+            <h3 className="card-title-styled">Preferred Category Breakdown</h3>
+            <p className="card-subtitle-styled">Major purchase categories across the mall customer database</p>
           </div>
           <div className="horizontal-bar-chart">
             <div className="h-bar-container">
-              <span className="h-bar-label">Artist</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '92%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">2,518</span>
+              <span className="h-bar-label">Electronics</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '100%', backgroundColor: '#10b981' }}></div></div>
+              <span className="h-bar-value">215</span>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label">Healthcare</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '51%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">1,332</span>
+              <span className="h-bar-label">Sports</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '97.6%', backgroundColor: '#10b981' }}></div></div>
+              <span className="h-bar-value">210</span>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label">Entertainment</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '37%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">949</span>
+              <span className="h-bar-label">Home & Garden</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '95.8%', backgroundColor: '#10b981' }}></div></div>
+              <span className="h-bar-value">206</span>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label">Engineer</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '27%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">699</span>
+              <span className="h-bar-label">Groceries</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '92.5%', backgroundColor: '#10b981' }}></div></div>
+              <span className="h-bar-value">199</span>
             </div>
             <div className="h-bar-container">
-              <span className="h-bar-label">Doctor</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '26.5%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">688</span>
-            </div>
-            <div className="h-bar-container">
-              <span className="h-bar-label">Lawyer</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '24%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">623</span>
-            </div>
-            <div className="h-bar-container">
-              <span className="h-bar-label">Executive</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '23%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">599</span>
-            </div>
-            <div className="h-bar-container">
-              <span className="h-bar-label">Marketing</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '11.5%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">292</span>
-            </div>
-            <div className="h-bar-container">
-              <span className="h-bar-label">Homemaker</span>
-              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '9.5%', backgroundColor: '#10b981' }}></div></div>
-              <span className="h-bar-value">247</span>
+              <span className="h-bar-label">Clothing</span>
+              <div className="h-bar-track"><div className="h-bar-fill" style={{ width: '79%', backgroundColor: '#10b981' }}></div></div>
+              <span className="h-bar-value">170</span>
             </div>
           </div>
         </div>
@@ -106,22 +86,29 @@ export default function Analytics({ qualityCheckData }) {
           <div className="chart-box">
             <svg width="180" height="180" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="8" />
-              {/* Male 54.7% (length = 130.6, offset = 0) */}
+              {/* Male 35.7% (length = 85.2, offset = 0) */}
               <circle cx="50" cy="50" r="38" fill="none" stroke="#3b82f6" strokeWidth="8"
-                strokeDasharray="130.6 238.7" strokeDashoffset="0" className="donut-segment" />
-              {/* Female 45.3% (length = 108.1, offset = -130.6) */}
+                strokeDasharray="85.2 238.7" strokeDashoffset="0" className="donut-segment" />
+              {/* Other 32.7% (length = 78.0, offset = -85.2) */}
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#8b5cf6" strokeWidth="8"
+                strokeDasharray="78.0 238.7" strokeDashoffset="-85.2" className="donut-segment" />
+              {/* Female 31.6% (length = 75.5, offset = -163.2) */}
               <circle cx="50" cy="50" r="38" fill="none" stroke="#ec4899" strokeWidth="8"
-                strokeDasharray="108.1 238.7" strokeDashoffset="-130.6" className="donut-segment" />
+                strokeDasharray="75.5 238.7" strokeDashoffset="-163.2" className="donut-segment" />
             </svg>
             
             <div className="legend-container" style={{ flexDirection: 'column', alignItems: 'flex-start', paddingLeft: '2rem', marginTop: '1rem' }}>
               <div className="legend-item" style={{ fontSize: '0.85rem' }}>
                 <span className="legend-dot" style={{ backgroundColor: '#3b82f6', width: '12px', height: '12px' }}></span>
-                <strong>Male:</strong> 4,417 (54.7%)
+                <strong>Male:</strong> 357 (35.7%)
               </div>
-              <div className="legend-item" style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+              <div className="legend-item" style={{ fontSize: '0.85rem', marginTop: '0.4rem' }}>
+                <span className="legend-dot" style={{ backgroundColor: '#8b5cf6', width: '12px', height: '12px' }}></span>
+                <strong>Other:</strong> 327 (32.7%)
+              </div>
+              <div className="legend-item" style={{ fontSize: '0.85rem', marginTop: '0.4rem' }}>
                 <span className="legend-dot" style={{ backgroundColor: '#ec4899', width: '12px', height: '12px' }}></span>
-                <strong>Female:</strong> 3,651 (45.3%)
+                <strong>Female:</strong> 316 (31.6%)
               </div>
             </div>
           </div>
@@ -142,40 +129,40 @@ export default function Analytics({ qualityCheckData }) {
               
               {/* Seg A */}
               <div className="v-bar-container" style={{ width: '22%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column-reverse', height: '80%', width: '32px' }}>
-                  <div style={{ height: '60%', backgroundColor: '#f43f5e', borderRadius: '0 0 0 0' }}></div>
-                  <div style={{ height: '25%', backgroundColor: '#10b981', borderRadius: '0 0 0 0' }}></div>
-                  <div style={{ height: '15%', backgroundColor: '#f97316', borderRadius: '4px 4px 0 0' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column-reverse', height: '85%', width: '32px' }}>
+                  <div style={{ height: '34.1%', backgroundColor: '#f43f5e', borderRadius: '0 0 0 0' }}></div>
+                  <div style={{ height: '29.1%', backgroundColor: '#f97316', borderRadius: '0 0 0 0' }}></div>
+                  <div style={{ height: '36.8%', backgroundColor: '#10b981', borderRadius: '4px 4px 0 0' }}></div>
                 </div>
                 <span className="v-bar-label">Segment A</span>
               </div>
               
               {/* Seg B */}
               <div className="v-bar-container" style={{ width: '22%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column-reverse', height: '72%', width: '32px' }}>
-                  <div style={{ height: '38%', backgroundColor: '#f43f5e', borderRadius: '0 0 0 0' }}></div>
-                  <div style={{ height: '42%', backgroundColor: '#10b981', borderRadius: '0 0 0 0' }}></div>
-                  <div style={{ height: '20%', backgroundColor: '#f97316', borderRadius: '4px 4px 0 0' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column-reverse', height: '85%', width: '32px' }}>
+                  <div style={{ height: '34.0%', backgroundColor: '#f43f5e', borderRadius: '0 0 0 0' }}></div>
+                  <div style={{ height: '31.6%', backgroundColor: '#f97316', borderRadius: '0 0 0 0' }}></div>
+                  <div style={{ height: '34.4%', backgroundColor: '#10b981', borderRadius: '4px 4px 0 0' }}></div>
                 </div>
                 <span className="v-bar-label">Segment B</span>
               </div>
               
               {/* Seg C */}
               <div className="v-bar-container" style={{ width: '22%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column-reverse', height: '76%', width: '32px' }}>
-                  <div style={{ height: '28%', backgroundColor: '#f43f5e', borderRadius: '0 0 0 0' }}></div>
-                  <div style={{ height: '48%', backgroundColor: '#10b981', borderRadius: '0 0 0 0' }}></div>
-                  <div style={{ height: '24%', backgroundColor: '#f97316', borderRadius: '4px 4px 0 0' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column-reverse', height: '0%', width: '32px' }}>
+                  <div style={{ height: '0%', backgroundColor: '#f43f5e', borderRadius: '0 0 0 0' }}></div>
+                  <div style={{ height: '0%', backgroundColor: '#f97316', borderRadius: '0 0 0 0' }}></div>
+                  <div style={{ height: '0%', backgroundColor: '#10b981', borderRadius: '4px 4px 0 0' }}></div>
                 </div>
                 <span className="v-bar-label">Segment C</span>
               </div>
               
               {/* Seg D */}
               <div className="v-bar-container" style={{ width: '22%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column-reverse', height: '88%', width: '32px' }}>
-                  <div style={{ height: '78%', backgroundColor: '#f43f5e', borderRadius: '0 0 0 0' }}></div>
-                  <div style={{ height: '12%', backgroundColor: '#10b981', borderRadius: '0 0 0 0' }}></div>
-                  <div style={{ height: '10%', backgroundColor: '#f97316', borderRadius: '4px 4px 0 0' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column-reverse', height: '85%', width: '32px' }}>
+                  <div style={{ height: '27.9%', backgroundColor: '#f43f5e', borderRadius: '0 0 0 0' }}></div>
+                  <div style={{ height: '32.6%', backgroundColor: '#f97316', borderRadius: '0 0 0 0' }}></div>
+                  <div style={{ height: '39.5%', backgroundColor: '#10b981', borderRadius: '4px 4px 0 0' }}></div>
                 </div>
                 <span className="v-bar-label">Segment D</span>
               </div>
@@ -183,10 +170,10 @@ export default function Analytics({ qualityCheckData }) {
             
             <div className="legend-container" style={{ marginTop: '1rem' }}>
               <div className="legend-item">
-                <span className="legend-dot" style={{ backgroundColor: '#f97316' }}></span> Average Spending
+                <span className="legend-dot" style={{ backgroundColor: '#10b981' }}></span> High Spending
               </div>
               <div className="legend-item">
-                <span className="legend-dot" style={{ backgroundColor: '#10b981' }}></span> High Spending
+                <span className="legend-dot" style={{ backgroundColor: '#f97316' }}></span> Average Spending
               </div>
               <div className="legend-item">
                 <span className="legend-dot" style={{ backgroundColor: '#f43f5e' }}></span> Low Spending
@@ -221,16 +208,16 @@ export default function Analytics({ qualityCheckData }) {
               <text x="10" y="126" fill="var(--text-dim)" fontSize="8">18</text>
               
               {/* Area fill */}
-              <path d="M 30 90 Q 95 72 160 70 T 270 120 L 270 130 L 30 130 Z" fill="url(#ageCurveGradient)"/>
+              <path d="M 30 82 C 70 82, 90 83, 110 83 C 130 83, 170 130, 190 130 C 210 130, 250 85, 270 85 L 270 130 L 30 130 Z" fill="url(#ageCurveGradient)"/>
               
               {/* Line curve path */}
-              <path d="M 30 90 Q 95 72 160 70 T 270 120" fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round"/>
+              <path d="M 30 82 C 70 82, 90 83, 110 83 C 130 83, 170 130, 190 130 C 210 130, 250 85, 270 85" fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round"/>
               
               {/* Points */}
-              <circle cx="30" cy="90" r="3" fill="#6366f1" stroke="#fff" strokeWidth="1"/>
-              <circle cx="110" cy="74" r="3" fill="#6366f1" stroke="#fff" strokeWidth="1"/>
-              <circle cx="190" cy="70" r="3" fill="#6366f1" stroke="#fff" strokeWidth="1"/>
-              <circle cx="270" cy="120" r="3" fill="#6366f1" stroke="#fff" strokeWidth="1"/>
+              <circle cx="30" cy="82" r="3" fill="#6366f1" stroke="#fff" strokeWidth="1"/>
+              <circle cx="110" cy="83" r="3" fill="#6366f1" stroke="#fff" strokeWidth="1"/>
+              <circle cx="190" cy="130" r="3" fill="#6366f1" stroke="#fff" strokeWidth="1"/>
+              <circle cx="270" cy="85" r="3" fill="#6366f1" stroke="#fff" strokeWidth="1"/>
               
               {/* X axis labels */}
               <text x="20" y="142" fill="var(--text-dim)" fontSize="8">Segment A</text>
