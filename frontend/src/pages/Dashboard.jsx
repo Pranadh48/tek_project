@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Activity, Calendar, Briefcase, Award, Sparkles, TrendingUp, Users } from 'lucide-react';
+import { Database, Activity, Calendar, Briefcase, Award, Sparkles, TrendingUp, Users, Info } from 'lucide-react';
 
 export default function Dashboard() {
   const segmentMetadata = {

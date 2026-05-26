@@ -10,10 +10,10 @@ import {
 
 // Import Modular Page Components
 import Dashboard from './pages/Dashboard';
-import PredictSegment from './pages/PredictSegment';
-import Analytics from './pages/Analytics';
+import LogisticModel from './pages/LogisticModel';
+import KnnModel from './pages/KnnModel';
+import PredictionCenter from './pages/PredictionCenter';
 import DataExplorer from './pages/DataExplorer';
-import ModelInfo from './pages/ModelInfo';
 
 const API_BASE_URL = 'http://localhost:8008';
 
@@ -27,21 +27,17 @@ export default function App() {
   
   // Predict Segment form state
   const [formData, setFormData] = useState({
-    gender: 'Male',
-    ever_married: 'Yes',
-    age: 30,
-    graduated: 'Yes',
-    profession: 'Artist',
-    spending_score: 'Low',
-    work_experience: 1,
-    family_size: 2,
-    var_1: 'Cat_1'
+    age: 38,
+    gender: 'Female',
+    income: 99342,
+    spending_score: 90,
+    membership_years: 3,
+    purchase_frequency: 24,
+    preferred_category: 'Groceries',
+    last_purchase_amount: 113.53
   });
   
   const [singleResult, setSingleResult] = useState(null);
-  const [classProbabilities, setClassProbabilities] = useState({
-    A: 55, B: 25, C: 12, D: 8
-  });
   
   // Batch upload state (inside Data Explorer)
   const [batchData, setBatchData] = useState([]);
@@ -74,48 +70,8 @@ export default function App() {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: ['work_experience', 'family_size', 'age'].includes(name) ? parseFloat(value) : value
+      [name]: ['age', 'income', 'spending_score', 'membership_years', 'purchase_frequency', 'last_purchase_amount'].includes(name) ? parseFloat(value) : value
     }));
-  };
-
-  // Maps frontend demographics fields to backend models expected input fields
-  const mapFormToBackend = (inputs) => {
-    const professionIncome = {
-      'Artist': 58000,
-      'Healthcare': 85000,
-      'Entertainment': 62000,
-      'Engineer': 105000,
-      'Doctor': 148000,
-      'Lawyer': 125000,
-      'Executive': 130000,
-      'Marketing': 78000,
-      'Homemaker': 35000
-    };
-
-    const spendScoreNumeric = {
-      'Low': 25,
-      'Average': 55,
-      'High': 85
-    };
-
-    const income = professionIncome[inputs.profession] || 75000;
-    const score = spendScoreNumeric[inputs.spending_score] || 50;
-    
-    // Sensible synthetic mappings to satisfy backend model columns
-    const purchase_frequency = inputs.spending_score === 'High' ? 32 : inputs.spending_score === 'Average' ? 18 : 6;
-    const last_purchase_amount = inputs.spending_score === 'High' ? 350 : inputs.spending_score === 'Average' ? 120 : 35;
-    
-    return {
-      age: inputs.age,
-      gender: inputs.gender,
-      income: income,
-      spending_score: score,
-      membership_years: inputs.work_experience + 1,
-      purchase_frequency: purchase_frequency,
-      preferred_category: inputs.profession === 'Artist' || inputs.profession === 'Lawyer' ? 'Clothing' : 
-                         inputs.profession === 'Engineer' || inputs.profession === 'Entertainment' ? 'Electronics' : 'Groceries',
-      last_purchase_amount: last_purchase_amount
-    };
   };
 
   // Form submit for single prediction
@@ -124,12 +80,10 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const backendPayload = mapFormToBackend(formData);
-      
       const res = await fetch(`${API_BASE_URL}/api/predict/single`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(backendPayload)
+        body: JSON.stringify(formData)
       });
       if (!res.ok) {
         const errDetail = await res.json();
@@ -137,36 +91,31 @@ export default function App() {
       }
       const data = await res.json();
       
-      // Map cluster IDs 0, 1, 2 to Segment names/IDs from pictures
-      // 0: High-Value Shopper -> Segment A (Premium High-Value)
-      // 2: Standard Shopper -> Segment B (Stable Mid-Range)
-      // 1: Low-Engagement Shopper -> Segment D (Occasional Buyer / Budget Conscious)
-      const clusterId = data.predictions.svm.segment;
-      let finalSegment = 'A';
-      let confidence = 39.11;
-      let probabilities = { A: 12, B: 18, C: 15, D: 55 };
-
-      if (clusterId === 0) {
-        finalSegment = 'A';
-        confidence = 72.84;
-        probabilities = { A: 72, B: 14, C: 9, D: 5 };
-      } else if (clusterId === 2) {
-        finalSegment = 'B';
-        confidence = 68.32;
-        probabilities = { A: 11, B: 68, C: 14, D: 7 };
-      } else {
-        finalSegment = 'D';
-        confidence = 61.45;
-        probabilities = { A: 8, B: 10, C: 21, D: 61 };
-      }
+      const resLogistic = data.predictions.logistic;
+      const resKnn = data.predictions.knn;
 
       setSingleResult({
-        segment: finalSegment,
-        confidence: confidence,
-        svmOriginal: data.predictions.svm,
-        knnOriginal: data.predictions.knn
+        logistic: resLogistic,
+        knn: resKnn
       });
-      setClassProbabilities(probabilities);
+
+      // Append to the list of customer records in the table view
+      const newCustomerRow = {
+        id: batchData.length + 1,
+        age: formData.age,
+        gender: formData.gender,
+        income: formData.income,
+        spending_score: formData.spending_score,
+        membership_years: formData.membership_years,
+        purchase_frequency: formData.purchase_frequency,
+        preferred_category: formData.preferred_category,
+        last_purchase_amount: formData.last_purchase_amount,
+        predicted_segment_logistic: resLogistic.segment,
+        predicted_segment_knn: resKnn.segment
+      };
+
+      setBatchData(prev => [newCustomerRow, ...prev]);
+      setTotalRecords(prev => prev + 1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -209,18 +158,18 @@ export default function App() {
   };
 
   const calculateStats = (data) => {
-    const svmStats = {};
+    const logisticStats = {};
     const knnStats = {};
     
     data.forEach(row => {
-      const svmSeg = row.segment_name_svm;
+      const logisticSeg = row.segment_name_logistic;
       const knnSeg = row.segment_name_knn;
       
-      svmStats[svmSeg] = (svmStats[svmSeg] || 0) + 1;
+      logisticStats[logisticSeg] = (logisticStats[logisticSeg] || 0) + 1;
       knnStats[knnSeg] = (knnStats[knnSeg] || 0) + 1;
     });
     
-    setSegmentStats({ svm: svmStats, knn: knnStats });
+    setSegmentStats({ logistic: logisticStats, knn: knnStats });
   };
 
   // Convert processed data to downloadable CSV
@@ -262,7 +211,7 @@ export default function App() {
       (row.id && String(row.id).includes(searchLower)) ||
       (row.gender && String(row.gender).toLowerCase().includes(searchLower)) ||
       (row.preferred_category && String(row.preferred_category).toLowerCase().includes(searchLower)) ||
-      (row.segment_name_svm && row.segment_name_svm.toLowerCase().includes(searchLower)) ||
+      (row.segment_name_logistic && row.segment_name_logistic.toLowerCase().includes(searchLower)) ||
       (row.segment_name_knn && row.segment_name_knn.toLowerCase().includes(searchLower))
     );
   });
@@ -347,28 +296,28 @@ export default function App() {
                 <Activity /> Dashboard
               </li>
               <li 
-                className={`nav-item ${activeTab === 'predict' ? 'active' : ''}`}
-                onClick={() => setActiveTab('predict')}
+                className={`nav-item ${activeTab === 'logistic' ? 'active' : ''}`}
+                onClick={() => setActiveTab('logistic')}
               >
-                <User /> Predict Segment
+                <Brain /> Logistic Model
               </li>
               <li 
-                className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
-                onClick={() => setActiveTab('analytics')}
+                className={`nav-item ${activeTab === 'knn' ? 'active' : ''}`}
+                onClick={() => setActiveTab('knn')}
               >
-                <TrendingUp /> Analytics
+                <Brain /> KNN Model
+              </li>
+              <li 
+                className={`nav-item ${activeTab === 'predict_center' ? 'active' : ''}`}
+                onClick={() => setActiveTab('predict_center')}
+              >
+                <Layers /> Prediction Center
               </li>
               <li 
                 className={`nav-item ${activeTab === 'explorer' ? 'active' : ''}`}
                 onClick={() => setActiveTab('explorer')}
               >
                 <Database /> Data Explorer
-              </li>
-              <li 
-                className={`nav-item ${activeTab === 'info' ? 'active' : ''}`}
-                onClick={() => setActiveTab('info')}
-              >
-                <Brain /> Model Info
               </li>
             </ul>
           </div>
@@ -393,17 +342,17 @@ export default function App() {
           <div className="main-header-info">
             <h2>
               {activeTab === 'dashboard' && 'Dashboard'}
-              {activeTab === 'predict' && 'Predict Segment'}
-              {activeTab === 'analytics' && 'Analytics'}
+              {activeTab === 'logistic' && 'Logistic Model Insights'}
+              {activeTab === 'knn' && 'KNN Model Insights'}
+              {activeTab === 'predict_center' && 'Prediction Center'}
               {activeTab === 'explorer' && 'Data Explorer'}
-              {activeTab === 'info' && 'Model Info'}
             </h2>
             <p>
               {activeTab === 'dashboard' && 'Overview of customer segmentation insights'}
-              {activeTab === 'predict' && 'Enter customer details to get ML-powered segment prediction'}
-              {activeTab === 'analytics' && 'Deep dive into customer behavior and spending patterns'}
-              {activeTab === 'explorer' && 'Browse training and test dataset records'}
-              {activeTab === 'info' && 'Model performance metrics, accuracy and evaluation'}
+              {activeTab === 'logistic' && 'Accuracy, correlation heatmap, and Logistic classifications'}
+              {activeTab === 'knn' && 'Accuracy, correlation heatmap, and KNN classifications'}
+              {activeTab === 'predict_center' && 'Perform individual or bulk CSV segmentation predictions'}
+              {activeTab === 'explorer' && 'Browse database training customer records'}
             </p>
           </div>
           <div className="header-badge">
@@ -416,20 +365,35 @@ export default function App() {
           <Dashboard />
         )}
 
-        {activeTab === 'predict' && (
-          <PredictSegment 
-            formData={formData}
-            loading={loading}
-            singleResult={singleResult}
-            classProbabilities={classProbabilities}
-            handleInputChange={handleInputChange}
-            handleSingleSubmit={handleSingleSubmit}
-            segmentMetadata={segmentMetadata}
-          />
+        {activeTab === 'logistic' && (
+          <LogisticModel modelInfo={modelInfo} />
         )}
 
-        {activeTab === 'analytics' && (
-          <Analytics qualityCheckData={qualityCheckData} />
+        {activeTab === 'knn' && (
+          <KnnModel modelInfo={modelInfo} />
+        )}
+
+        {activeTab === 'predict_center' && (
+          <PredictionCenter 
+            formData={formData}
+            loading={loading}
+            handleInputChange={handleInputChange}
+            handleSingleSubmit={handleSingleSubmit}
+            handleCSVUpload={handleCSVUpload}
+            batchData={batchData}
+            singleResult={singleResult}
+            totalRecords={totalRecords}
+            searchTerm={searchTerm}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            setSearchTerm={setSearchTerm}
+            setCurrentPage={setCurrentPage}
+            handleDownloadCSV={handleDownloadCSV}
+            currentTableData={currentTableData}
+            filteredData={filteredData}
+            totalPages={totalPages}
+            modelInfo={modelInfo}
+          />
         )}
 
         {activeTab === 'explorer' && (
@@ -449,10 +413,6 @@ export default function App() {
             totalPages={totalPages}
             filteredData={filteredData}
           />
-        )}
-
-        {activeTab === 'info' && (
-          <ModelInfo modelInfo={modelInfo} />
         )}
 
       </main>

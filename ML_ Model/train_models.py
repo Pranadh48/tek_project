@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 from sklearn.cluster import KMeans
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, classification_report
 import joblib
@@ -97,14 +97,14 @@ def main():
         random_state=42
     )
     
-    # 7. Train SVM
-    print("Training SVM Classifier...")
-    svm = SVC(kernel='rbf', probability=True, random_state=42)
-    svm.fit(X_train, y_train)
-    y_pred_svm = svm.predict(X_test)
-    svm_acc = accuracy_score(y_test, y_pred_svm)
-    print(f"SVM Accuracy: {svm_acc:.4f}")
-    print(classification_report(y_test, y_pred_svm))
+    # 7. Train Logistic Regression
+    print("Training Logistic Regression Classifier...")
+    logistic = LogisticRegression(max_iter=1000, random_state=42)
+    logistic.fit(X_train, y_train)
+    y_pred_logistic = logistic.predict(X_test)
+    logistic_acc = accuracy_score(y_test, y_pred_logistic)
+    print(f"Logistic Regression Accuracy: {logistic_acc:.4f}")
+    print(classification_report(y_test, y_pred_logistic))
     
     # 8. Train KNN
     print("Training KNN Classifier...")
@@ -118,7 +118,7 @@ def main():
     # 9. Save all artifacts using joblib
     print(f"Saving models and scalers to: {models_dir}")
     joblib.dump(kmeans, os.path.join(models_dir, 'kmeans.joblib'))
-    joblib.dump(svm, os.path.join(models_dir, 'svm.joblib'))
+    joblib.dump(logistic, os.path.join(models_dir, 'logistic.joblib'))
     joblib.dump(knn, os.path.join(models_dir, 'knn.joblib'))
     joblib.dump(minmax_scaler, os.path.join(models_dir, 'minmax_scaler.joblib'))
     joblib.dump(robust_scaler, os.path.join(models_dir, 'robust_scaler.joblib'))
@@ -130,9 +130,9 @@ def main():
         
     # Save performance metrics metadata
     metrics = {
-        "svm": {
-            "accuracy": float(svm_acc),
-            "classification_report": classification_report(y_test, y_pred_svm, output_dict=True)
+        "logistic": {
+            "accuracy": float(logistic_acc),
+            "classification_report": classification_report(y_test, y_pred_logistic, output_dict=True)
         },
         "knn": {
             "accuracy": float(knn_acc),

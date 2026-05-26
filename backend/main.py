@@ -29,6 +29,7 @@ MODELS = {}
 SCALERS = {}
 METRICS = {}
 FEATURE_COLS = []
+DATASET_STATS = {}
 SEGMENT_MAP = {
     0: {
         "name": "High-Value Shopper",
@@ -55,7 +56,7 @@ def load_assets():
     
     try:
         MODELS['kmeans'] = joblib.load(os.path.join(models_dir, 'kmeans.joblib'))
-        MODELS['svm'] = joblib.load(os.path.join(models_dir, 'svm.joblib'))
+        MODELS['logistic'] = joblib.load(os.path.join(models_dir, 'logistic.joblib'))
         MODELS['knn'] = joblib.load(os.path.join(models_dir, 'knn.joblib'))
         
         SCALERS['minmax'] = joblib.load(os.path.join(models_dir, 'minmax_scaler.joblib'))
@@ -73,6 +74,9 @@ def load_assets():
             METRICS = json.load(f)
             
         print("All models, scalers, and metadata loaded successfully!")
+        
+        # Calculate dataset statistics
+        compute_dataset_stats()
     except Exception as e:
         print(f"Error loading models or scalers: {e}")
         print("Please run train_models.py first to generate the models.")
@@ -134,6 +138,92 @@ def preprocess_df(df_input: pd.DataFrame) -> pd.DataFrame:
     # Ensure columns match training features in exact order
     return df[FEATURE_COLS]
 
+def compute_dataset_stats():
+    global DATASET_STATS
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(os.path.dirname(base_dir), 'ML_ Model', 'customer_segmentation_data.csv')
+    
+    if not os.path.exists(csv_path):
+        print(f"Dataset CSV not found at {csv_path} for stats generation.")
+        return
+        
+    try:
+        df = pd.read_csv(csv_path)
+        
+        # Calculate general stats
+        avg_age = float(df['age'].mean())
+        total_records = len(df)
+        training_records = int(total_records * 0.7)
+        test_records = total_records - training_records
+        
+        # Calculate correlation matrix
+        numeric_cols = ['age', 'income', 'spending_score', 'membership_years', 'purchase_frequency', 'last_purchase_amount']
+        corr = df[numeric_cols].corr()
+        
+        # Format correlation matrix for frontend
+        corr_matrix = []
+        for col1 in numeric_cols:
+            row_vals = []
+            for col2 in numeric_cols:
+                row_vals.append({
+                    "x": col1,
+                    "y": col2,
+                    "value": float(corr.loc[col1, col2])
+                })
+            corr_matrix.append(row_vals)
+            
+        # Get predictions for all records
+        X_scaled = preprocess_df(df)
+        preds_logistic = MODELS['logistic'].predict(X_scaled)
+        preds_knn = MODELS['knn'].predict(X_scaled)
+        
+        df['pred_logistic'] = preds_logistic
+        df['pred_knn'] = preds_knn
+        
+        # Calculate stats for Logistic
+        logistic_dist = {}
+        logistic_age = {}
+        for seg in [0, 1, 2]:
+            seg_df = df[df['pred_logistic'] == seg]
+            count = len(seg_df)
+            logistic_dist[str(seg)] = {
+                "count": count,
+                "percentage": float(count / total_records) * 100
+            }
+            logistic_age[str(seg)] = float(seg_df['age'].mean()) if count > 0 else 0.0
+            
+        # Calculate stats for KNN
+        knn_dist = {}
+        knn_age = {}
+        for seg in [0, 1, 2]:
+            seg_df = df[df['pred_knn'] == seg]
+            count = len(seg_df)
+            knn_dist[str(seg)] = {
+                "count": count,
+                "percentage": float(count / total_records) * 100
+            }
+            knn_age[str(seg)] = float(seg_df['age'].mean()) if count > 0 else 0.0
+            
+        DATASET_STATS = {
+            "total_records": total_records,
+            "training_records": training_records,
+            "test_records": test_records,
+            "average_age": avg_age,
+            "correlation_labels": numeric_cols,
+            "correlation_matrix": corr_matrix,
+            "logistic": {
+                "distribution": logistic_dist,
+                "average_age": logistic_age
+            },
+            "knn": {
+                "distribution": knn_dist,
+                "average_age": knn_age
+            }
+        }
+        print("Dataset stats successfully calculated and cached!")
+    except Exception as e:
+        print(f"Error computing dataset stats: {e}")
+
 # 5. API Endpoints
 @app.get("/")
 def read_root():
@@ -145,7 +235,8 @@ def get_model_info():
         raise HTTPException(status_code=503, detail="Models or metrics metadata not loaded. Run train_models.py first.")
     return {
         "metrics": METRICS,
-        "segments": SEGMENT_MAP
+        "segments": SEGMENT_MAP,
+        "stats": DATASET_STATS
     }
 
 @app.post("/api/predict/single")
@@ -162,11 +253,11 @@ def predict_single(customer: CustomerInput):
         X_scaled = preprocess_df(df_raw)
         
         # Predict clusters/segments
-        pred_svm = MODELS['svm'].predict(X_scaled)[0]
+        pred_logistic = MODELS['logistic'].predict(X_scaled)[0]
         pred_knn = MODELS['knn'].predict(X_scaled)[0]
         
         # Get segment details
-        segment_svm = SEGMENT_MAP.get(int(pred_svm), {"name": "Unknown", "description": "", "color": "#71717a"})
+        segment_logistic = SEGMENT_MAP.get(int(pred_logistic), {"name": "Unknown", "description": "", "color": "#71717a"})
         segment_knn = SEGMENT_MAP.get(int(pred_knn), {"name": "Unknown", "description": "", "color": "#71717a"})
         
         # Calculate engineered feature values for display/debugging
@@ -183,11 +274,11 @@ def predict_single(customer: CustomerInput):
             
         return {
             "predictions": {
-                "svm": {
-                    "segment": int(pred_svm),
-                    "name": segment_svm["name"],
-                    "description": segment_svm["description"],
-                    "color": segment_svm["color"]
+                "logistic": {
+                    "segment": int(pred_logistic),
+                    "name": segment_logistic["name"],
+                    "description": segment_logistic["description"],
+                    "color": segment_logistic["color"]
                 },
                 "knn": {
                     "segment": int(pred_knn),
@@ -237,12 +328,12 @@ def predict_csv(file: UploadFile = File(...)):
         X_scaled = preprocess_df(df_uploaded)
         
         # Run classification models
-        preds_svm = MODELS['svm'].predict(X_scaled)
+        preds_logistic = MODELS['logistic'].predict(X_scaled)
         preds_knn = MODELS['knn'].predict(X_scaled)
         
         # Append predictions to output DataFrame
-        df_output['predicted_segment_svm'] = preds_svm
-        df_output['segment_name_svm'] = df_output['predicted_segment_svm'].map(lambda x: SEGMENT_MAP.get(int(x), {}).get('name', 'Unknown'))
+        df_output['predicted_segment_logistic'] = preds_logistic
+        df_output['segment_name_logistic'] = df_output['predicted_segment_logistic'].map(lambda x: SEGMENT_MAP.get(int(x), {}).get('name', 'Unknown'))
         
         df_output['predicted_segment_knn'] = preds_knn
         df_output['segment_name_knn'] = df_output['predicted_segment_knn'].map(lambda x: SEGMENT_MAP.get(int(x), {}).get('name', 'Unknown'))
