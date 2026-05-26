@@ -2,7 +2,9 @@ import os
 import json
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, UploadFile, File
+import subprocess
+import sys
+from fastapi import FastAPI, HTTPException, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import joblib
@@ -267,3 +269,40 @@ def predict_csv(file: UploadFile = File(...)):
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to process CSV file: {str(e)}")
+
+@app.get("/api/customers")
+def get_customers():
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        csv_path = os.path.join(os.path.dirname(base_dir), 'ML_ Model', 'customer_segmentation_data.csv')
+        
+        if not os.path.exists(csv_path):
+            raise FileNotFoundError(f"Database CSV file not found at {csv_path}")
+            
+        df = pd.read_csv(csv_path)
+        # Convert to list of dicts
+        results = df.to_dict(orient='records')
+        return results
+    except Exception as e:
+        print(f"Error fetching dataset samples: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch dataset samples. Check database and backend status.")
+
+def run_training_script():
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        script_path = os.path.join(os.path.dirname(base_dir), 'ML_ Model', 'train_models.py')
+        
+        # Execute training script
+        subprocess.run([sys.executable, script_path], check=True, cwd=os.path.dirname(script_path))
+        
+        # Reload assets
+        load_assets()
+        print("Models successfully re-trained and reloaded!")
+    except Exception as e:
+        print(f"Error compiling ensemble model: {e}")
+
+@app.post("/api/train")
+def train_ensemble(background_tasks: BackgroundTasks):
+    background_tasks.add_task(run_training_script)
+    return {"message": "Ensemble training compiled and started in background."}
+
