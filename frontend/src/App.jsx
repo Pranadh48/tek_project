@@ -15,7 +15,7 @@ import KnnModel from './pages/KnnModel';
 import PredictionCenter from './pages/PredictionCenter';
 import DataExplorer from './pages/DataExplorer';
 
-const API_BASE_URL = 'http://localhost:8008';
+const API_BASE_URL = 'https://tek-project.onrender.com';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');

@@ -18,7 +18,7 @@ app = FastAPI(
 # Enable CORS for React Frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify the React app domain
+    allow_origins=["https://tek-project.vercel.app/"],  # In production, specify the React app domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
